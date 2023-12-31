@@ -35,8 +35,6 @@ namespace Memory_Scanner__Take_3_
             // SCAN TYPE COMBO BOX
 
             comboBox2.Items.Add("Exact Value");
-
-            label2.Text = "NULL";
         }
 
         public int GetProcessIdFromName(string name)
@@ -64,10 +62,10 @@ namespace Memory_Scanner__Take_3_
                 {
                     Debug.WriteLine("ERROR: THE PROCESS IS NOT RESPONDING OR IS NULL");
                     return false;
-
+                    
                 }
 
-                mProcess.Handle = Imps.OpenProcess(0x1F0FFF, true, processId);
+                mProcess.Handle = Imps.OpenProcess(PROCESS_WM_READ, true, processId);
 
                 Debug.WriteLine($"PROCESS: {mProcess.Process} HAS NOW BEEN OPENED, PROCESS ID: {processId}");
                 return true;
@@ -113,17 +111,17 @@ namespace Memory_Scanner__Take_3_
 
             keyValuePairs.Clear(); // CLEAR PREVIOUS SCAN RESULTS BEFORE A NEW SCAN
 
+            List<string> results = new List<string>();
+
             for (long address = start; address <= end; address++)
             {
                 if (valueType == "String")
                 {
                     string valueAtAddress = ReadString(address);
 
-                    Debug.WriteLine($"VALUE AT ADDRESS: {address:X} VALUE: {valueAtAddress}");
-
-                    if (valueAtAddress == valueToFind as string)
+                    if (valueAtAddress.Equals(valueToFind))
                     {
-                        listView1.Items.Add($"ADDRESS: {address:X}, VALUE: {valueAtAddress}");
+                        results.Add($"ADDRESS: {address:X}, VALUE: {valueAtAddress}");
                         keyValuePairs[address] = valueAtAddress;
                     }
                 }
@@ -132,9 +130,9 @@ namespace Memory_Scanner__Take_3_
                 {
                     int valueAtAddress = Read4ByteBigEndian(address);
 
-                    if (valueAtAddress == Convert.ToInt32(valueToFind))
+                    if (valueAtAddress.Equals(Convert.ToInt32(valueToFind)))
                     {
-                        listView1.Items.Add($"ADDRESS: {address:X}, VALUE: {valueAtAddress}");
+                        results.Add($"ADDRESS: {address:X}, VALUE: {valueAtAddress}");
                         keyValuePairs[address] = valueAtAddress;
                     }
                 }
@@ -143,15 +141,22 @@ namespace Memory_Scanner__Take_3_
                 {
                     int valueAtAddress = Read2ByteBigEndian(address);
 
-                    Debug.WriteLine($"VALUE AT ADDRESS: {address:X} VALUE: {valueAtAddress}");
-
-                    if (valueAtAddress == Convert.ToInt16(valueToFind))
+                    if (valueAtAddress.Equals(Convert.ToInt16(valueToFind)))
                     {
-                        listView1.Items.Add($"ADDRESS: {address:X}, VALUE: {valueAtAddress}");
+                        results.Add($"ADDRESS: {address:X}, VALUE: {valueAtAddress}");
                         keyValuePairs[address] = valueAtAddress;
                     }
                 }
             }
+
+            foreach (string result in results)
+            {
+                listView1.Items.Add(result); // CUTTING DOWN ON UI UPDATES
+            }
+
+            int resultCount = results.Count;
+
+            label7.Text = resultCount.ToString();
 
             MessageBox.Show("SCAN COMPLETE.");
         }
@@ -159,6 +164,8 @@ namespace Memory_Scanner__Take_3_
         public void NextScan(object valueToFind, ListView listView1)
         {
             Dictionary<long, object> keyValuePairs2 = new Dictionary<long, object>();
+
+            List<string> results = new List<string>();
 
             foreach (var pair in keyValuePairs)
             {
@@ -182,17 +189,22 @@ namespace Memory_Scanner__Take_3_
 
                 if (valueAtAddress.Equals(valueToFind))
                 {
-                    listView1.Items.Add($"ADDRESS: {address:X}, VALUE: {valueAtAddress}");
+                    results.Add($"ADDRESS: {address:X}, VALUE: {valueAtAddress}");
                     keyValuePairs2[address] = valueAtAddress; // ADD THE CURRENT ADDRESS AND VALUE TO THE CURRENT SCAN RESULTS
                 }
 
                 keyValuePairs = keyValuePairs2; // UPDATE THE PREVIOUS SCAN WITH THE CURRENT SCAN SO THAT NEXT SCAN IS READY AGAIN
             }
+
+            foreach(string result in results)
+            {
+                listView1.Items.Add(result);
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            FirstScan(0x330000000, 0x340000000, textBox1.Text, comboBox1.SelectedItem.ToString(), listView1);
+            FirstScan(0x348BF55C3, 0x348BF55C5, textBox1.Text, comboBox1.SelectedItem.ToString(), listView1);
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -200,6 +212,21 @@ namespace Memory_Scanner__Take_3_
             if (comboBox2.SelectedItem.ToString() == "Exact Value")
             {
                 NextScan(textBox1.Text, listView1);
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            listView2.Clear();
+        }
+
+        private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                ListViewItem selectedItem = listView1.SelectedItems[0];
+
+                listView2.Items.Add((ListViewItem)selectedItem.Clone());
             }
         }
     }
