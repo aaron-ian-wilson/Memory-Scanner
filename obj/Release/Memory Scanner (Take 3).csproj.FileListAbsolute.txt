@@ -1,0 +1,11 @@
+C:\Users\Aaron\Desktop\Personal Projects\Memory Scanner (Take 3)\bin\Release\Memory Scanner (Take 3).exe.config
+C:\Users\Aaron\Desktop\Personal Projects\Memory Scanner (Take 3)\bin\Release\Memory Scanner (Take 3).exe
+C:\Users\Aaron\Desktop\Personal Projects\Memory Scanner (Take 3)\bin\Release\Memory Scanner (Take 3).pdb
+C:\Users\Aaron\Desktop\Personal Projects\Memory Scanner (Take 3)\obj\Release\Memory Scanner (Take 3).csproj.AssemblyReference.cache
+C:\Users\Aaron\Desktop\Personal Projects\Memory Scanner (Take 3)\obj\Release\Memory Scanner (Take 3).csproj.SuggestedBindingRedirects.cache
+C:\Users\Aaron\Desktop\Personal Projects\Memory Scanner (Take 3)\obj\Release\Memory_Scanner__Take_3_.Form1.resources
+C:\Users\Aaron\Desktop\Personal Projects\Memory Scanner (Take 3)\obj\Release\Memory_Scanner__Take_3_.Properties.Resources.resources
+C:\Users\Aaron\Desktop\Personal Projects\Memory Scanner (Take 3)\obj\Release\Memory Scanner (Take 3).csproj.GenerateResource.cache
+C:\Users\Aaron\Desktop\Personal Projects\Memory Scanner (Take 3)\obj\Release\Memory Scanner (Take 3).csproj.CoreCompileInputs.cache
+C:\Users\Aaron\Desktop\Personal Projects\Memory Scanner (Take 3)\obj\Release\Memory Scanner (Take 3).exe
+C:\Users\Aaron\Desktop\Personal Projects\Memory Scanner (Take 3)\obj\Release\Memory Scanner (Take 3).pdb
