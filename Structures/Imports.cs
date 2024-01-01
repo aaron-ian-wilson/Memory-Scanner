@@ -15,6 +15,12 @@ namespace Memory_Scanner__Take_3_
         [DllImport("kernel32.dll")]
         public static extern bool ReadProcessMemory(IntPtr hProcess, long lpBaseAddress, [Out] byte[] lpBuffer, UIntPtr nSize, IntPtr lpNumberOfBytesRead);
 
-        public const int PROCESS_WM_READ = 0x0010;
+        [DllImport("kernel32.dll")]
+        public static extern bool WriteProcessMemory(IntPtr hProcess, long lpBaseAddress, byte[] lpBuffer, UIntPtr nSize, IntPtr lpNumberOfBytesWritten);
+
+        // ACCESS RIGHTS
+        public const int PROCESS_VM_READ = 0x0010;
+        public const int PROCESS_VM_WRITE = 0x0020;
+        public const int PROCESS_VM_OPERATION = 0x0008;
     }
 }

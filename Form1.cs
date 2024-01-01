@@ -11,6 +11,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.VisualBasic;
 using static Memory_Scanner__Take_3_.Imps;
 
 namespace Memory_Scanner__Take_3_
@@ -35,6 +36,16 @@ namespace Memory_Scanner__Take_3_
             // SCAN TYPE COMBO BOX
 
             comboBox2.Items.Add("Exact Value");
+
+            foreach (Control control in this.Controls)
+            {
+                control.Enabled = false;
+            }
+
+            button1.Enabled = true;
+
+            label1.Enabled = true;
+            label2.Enabled = true;
         }
 
         public int GetProcessIdFromName(string name)
@@ -65,7 +76,7 @@ namespace Memory_Scanner__Take_3_
                     
                 }
 
-                mProcess.Handle = Imps.OpenProcess(PROCESS_WM_READ, true, processId);
+                mProcess.Handle = Imps.OpenProcess(PROCESS_VM_READ + PROCESS_VM_WRITE + PROCESS_VM_OPERATION, true, processId);
 
                 Debug.WriteLine($"PROCESS: {mProcess.Process} HAS NOW BEEN OPENED, PROCESS ID: {processId}");
                 return true;
@@ -79,6 +90,11 @@ namespace Memory_Scanner__Take_3_
 
         private void button1_Click(object sender, EventArgs e)
         {
+            foreach (Control control in this.Controls)
+            {
+                control.Enabled = true;
+            }
+
             string processName = "rpcs3";
 
             int processId = GetProcessIdFromName(processName);
@@ -105,34 +121,44 @@ namespace Memory_Scanner__Take_3_
 
         private string valueType;
 
-        public void FirstScan(long start, long end, object valueToFind, string valueType, ListView listView1)
+        public void FirstScan(long start, long end, object valueToFind, string valueType, ListView listView1, ProgressBar progressBar1)
         {
+            listView1.Clear();
+
             this.valueType = valueType; // STORE THE SPECIFIED VALUE TYPE
 
             keyValuePairs.Clear(); // CLEAR PREVIOUS SCAN RESULTS BEFORE A NEW SCAN
 
             List<string> results = new List<string>();
 
+            progressBar1.Minimum = 0;
+            progressBar1.Maximum = (int)(end - start + 1);
+            progressBar1.Value = 0;
+
             for (long address = start; address <= end; address++)
             {
+                progressBar1.Value++;
+
                 if (valueType == "String")
                 {
                     string valueAtAddress = ReadString(address);
 
                     if (valueAtAddress.Equals(valueToFind))
                     {
-                        results.Add($"ADDRESS: {address:X}, VALUE: {valueAtAddress}");
+                        results.Add($"ADDRESS: {address:X}, TYPE: {valueType}, VALUE: {valueAtAddress}");
                         keyValuePairs[address] = valueAtAddress;
                     }
                 }
 
                 if (valueType == "4 Byte Big Endian")
                 {
-                    int valueAtAddress = Read4ByteBigEndian(address);
+                    long valueAtAddress = Read4ByteBigEndian(address);
 
-                    if (valueAtAddress.Equals(Convert.ToInt32(valueToFind)))
+                    valueToFind = Convert.ToInt32(valueToFind);
+
+                    if (valueAtAddress.Equals(valueToFind))
                     {
-                        results.Add($"ADDRESS: {address:X}, VALUE: {valueAtAddress}");
+                        results.Add($"ADDRESS: {address:X}, TYPE: {valueType}, VALUE: {valueAtAddress}");
                         keyValuePairs[address] = valueAtAddress;
                     }
                 }
@@ -163,6 +189,8 @@ namespace Memory_Scanner__Take_3_
 
         public void NextScan(object valueToFind, ListView listView1)
         {
+            listView1.Clear();
+
             Dictionary<long, object> keyValuePairs2 = new Dictionary<long, object>();
 
             List<string> results = new List<string>();
@@ -204,10 +232,18 @@ namespace Memory_Scanner__Take_3_
 
         private void button2_Click(object sender, EventArgs e)
         {
-            FirstScan(0x348BF55C3, 0x348BF55C5, textBox1.Text, comboBox1.SelectedItem.ToString(), listView1);
+            long start, end;
+
+            if (long.TryParse(textBox2.Text, System.Globalization.NumberStyles.HexNumber, null, out start) &&
+                long.TryParse(textBox3.Text, System.Globalization.NumberStyles.HexNumber, null, out end))
+            {
+
+                FirstScan(start, end, textBox1.Text, comboBox1.SelectedItem.ToString(), listView1, progressBar1);
+
+            }
         }
 
-        private void button3_Click(object sender, EventArgs e)
+            private void button3_Click(object sender, EventArgs e)
         {
             if (comboBox2.SelectedItem.ToString() == "Exact Value")
             {
@@ -228,6 +264,15 @@ namespace Memory_Scanner__Take_3_
 
                 listView2.Items.Add((ListViewItem)selectedItem.Clone());
             }
+        }
+
+        private void listView2_ItemActivate(object sender, EventArgs e)
+        {
+            ListViewItem selectedItem = listView2.SelectedItems[0];
+
+            string value = Microsoft.VisualBasic.Interaction.InputBox("ENTER A VALUE TO WRITE TO THE ADDRESS", "WRITE PROCESS MEMORY", "");
+
+            WriteMemory(0x349C74074, "4 byte big endian", value, null);
         }
     }
 }

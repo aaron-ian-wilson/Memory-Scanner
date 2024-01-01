@@ -58,10 +58,10 @@ namespace Memory_Scanner__Take_3_
         /// </summary>
         /// <param name="code">THE ADDRESS TO READ FROM</param>
         /// <returns></returns>
-        public int Read4ByteBigEndian(long code)
+        public long Read4ByteBigEndian(long code)
         {
             byte[] memory = new byte[4];
-            if (ReadProcessMemory(mProcess.Handle, code, memory, (UIntPtr)4, IntPtr.Zero)) // THROWING ACCESS VIOLATION ERROR
+            if (ReadProcessMemory(mProcess.Handle, code, memory, (UIntPtr)4, IntPtr.Zero))
             {
                 if (BitConverter.IsLittleEndian)
                 {

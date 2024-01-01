@@ -45,6 +45,13 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.label11 = new System.Windows.Forms.Label();
+            this.textBox4 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // button1
@@ -97,7 +104,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(216, 18);
+            this.label3.Location = new System.Drawing.Point(191, 18);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(45, 13);
             this.label3.TabIndex = 5;
@@ -124,7 +131,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(216, 44);
+            this.label4.Location = new System.Drawing.Point(191, 44);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(76, 13);
             this.label4.TabIndex = 8;
@@ -140,11 +147,12 @@
             this.listView2.Size = new System.Drawing.Size(507, 248);
             this.listView2.TabIndex = 9;
             this.listView2.UseCompatibleStateImageBehavior = false;
+            this.listView2.ItemActivate += new System.EventHandler(this.listView2_ItemActivate);
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(216, 71);
+            this.label5.Location = new System.Drawing.Point(191, 71);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(70, 13);
             this.label5.TabIndex = 10;
@@ -205,11 +213,75 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(298, 95);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(122, 20);
+            this.textBox2.TabIndex = 17;
+            this.textBox2.Text = "0000000000000000";
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(298, 121);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(122, 20);
+            this.textBox3.TabIndex = 18;
+            this.textBox3.Text = "00007FFFFFFFFFFF\r\n";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(191, 98);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(79, 13);
+            this.label9.TabIndex = 19;
+            this.label9.Text = "LONG START:";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(191, 124);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(66, 13);
+            this.label10.TabIndex = 20;
+            this.label10.Text = "LONG END:";
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(485, 12);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(303, 23);
+            this.progressBar1.TabIndex = 21;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(438, 98);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(145, 13);
+            this.label11.TabIndex = 22;
+            this.label11.Text = "POINTER SCAN ADDRESS:";
+            // 
+            // textBox4
+            // 
+            this.textBox4.Location = new System.Drawing.Point(589, 95);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(100, 20);
+            this.textBox4.TabIndex = 23;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.textBox4);
+            this.Controls.Add(this.label11);
+            this.Controls.Add(this.progressBar1);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.textBox3);
+            this.Controls.Add(this.textBox2);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
@@ -227,6 +299,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.button1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Form1";
             this.Text = "Memory Scanner";
             this.ResumeLayout(false);
@@ -253,6 +326,13 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.TextBox textBox4;
     }
 }
 

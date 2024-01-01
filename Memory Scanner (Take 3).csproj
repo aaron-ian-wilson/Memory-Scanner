@@ -38,6 +38,7 @@
     <ApplicationManifest>Methods\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -58,6 +59,9 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Methods\Read.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Methods\Write.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Program.cs" />
