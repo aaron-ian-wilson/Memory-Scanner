@@ -46,6 +46,7 @@ namespace Memory_Scanner__Take_3_
 
             label1.Enabled = true;
             label2.Enabled = true;
+
         }
 
         public int GetProcessIdFromName(string name)
@@ -135,7 +136,7 @@ namespace Memory_Scanner__Take_3_
             progressBar1.Maximum = (int)(end - start + 1);
             progressBar1.Value = 0;
 
-            for (long address = start; address <= end; address++)
+            for (long address = start; address <= end; address += 4)
             {
                 progressBar1.Value++;
 
@@ -154,9 +155,7 @@ namespace Memory_Scanner__Take_3_
                 {
                     long valueAtAddress = Read4ByteBigEndian(address);
 
-                    valueToFind = Convert.ToInt32(valueToFind);
-
-                    if (valueAtAddress.Equals(valueToFind))
+                    if (valueAtAddress.Equals(Convert.ToInt32(valueToFind)))
                     {
                         results.Add($"ADDRESS: {address:X}, TYPE: {valueType}, VALUE: {valueAtAddress}");
                         keyValuePairs[address] = valueAtAddress;
@@ -180,11 +179,14 @@ namespace Memory_Scanner__Take_3_
                 listView1.Items.Add(result); // CUTTING DOWN ON UI UPDATES
             }
 
-            int resultCount = results.Count;
+            label7.Text = listView1.Items.Count.ToString();
 
-            label7.Text = resultCount.ToString();
+            DialogResult dialogResult = MessageBox.Show("SCAN COMPLETE.");
 
-            MessageBox.Show("SCAN COMPLETE.");
+            if (dialogResult == DialogResult.OK)
+            {
+                progressBar1.Value = 0;
+            }
         }
 
         public void NextScan(object valueToFind, ListView listView1)
@@ -198,36 +200,79 @@ namespace Memory_Scanner__Take_3_
             foreach (var pair in keyValuePairs)
             {
                 long address = pair.Key; // GET THE ADDRESS FROM THE CURRENT PAIR
-                object valueAtAddress = null;
+                long valueAtAddress = 0;
 
                 if (valueType == "String")
                 {
-                    valueAtAddress = ReadString(address);
+                    // valueAtAddress = ReadString(address);
                 }
-                else if (valueType == "4 Byte Big Endian")
+
+                if (valueType == "4 Byte Big Endian")
                 {
-                    valueAtAddress = Read4ByteBigEndian(address);
+                    valueAtAddress = Read4ByteBigEndian(address); // THIS SHOULD CONTAIN THE CHANGED NUMBER
                 }
-                else if (valueType == "2 Byte Big Endian")
+
+                if (valueType == "2 Byte Big Endian")
                 {
                     valueAtAddress = Read2ByteBigEndian(address);
                 }
 
                 // IF THE VALUE AT THE ADDRESS EQUALS THE VALUE TO FIND
 
-                if (valueAtAddress.Equals(valueToFind))
+                if (valueAtAddress.Equals(Convert.ToInt32(valueToFind)))
                 {
                     results.Add($"ADDRESS: {address:X}, VALUE: {valueAtAddress}");
                     keyValuePairs2[address] = valueAtAddress; // ADD THE CURRENT ADDRESS AND VALUE TO THE CURRENT SCAN RESULTS
                 }
 
+                label7.Text = listView1.Items.Count.ToString();
+
                 keyValuePairs = keyValuePairs2; // UPDATE THE PREVIOUS SCAN WITH THE CURRENT SCAN SO THAT NEXT SCAN IS READY AGAIN
             }
 
-            foreach(string result in results)
+            foreach (string result in results)
             {
                 listView1.Items.Add(result);
             }
+        }
+
+        public void PointerScan(long start, long end, long address)
+        {
+            progressBar1.Minimum = 0;
+            progressBar1.Maximum = (int)(end - start + 1);
+            progressBar1.Value = 0;
+
+            listView1.Clear();
+
+            List<Tuple<long, int>> pointers = new List<Tuple<long, int>>();
+
+            int range = (int)(end - start);
+
+            for (int i = 0; i < range; i += 4)
+            {
+                long valueAtAddress = Read4ByteBigEndian(start + (long)i);
+
+                int distance = (int)(valueAtAddress - address); // THE DISTANCE IN BYTES
+
+                // IF DISTANCE IS NEGATIVE, CHANGE TO A ABSOLUTE VALUE
+                if (distance < 0)
+                {
+                    distance *= -1;
+                }
+
+                // IF THE DIFFERENCE IS LESS THAN OR EQUAL TO 0xFFFF (65535), CONSIDER IT A POTENTIAL POINTER
+                if (distance <= 0xFFFF)
+                {
+                    pointers.Add(new Tuple<long, int>(start + (long)i, distance));
+                }
+            }
+
+            foreach (var pointer in pointers)
+            {
+                string result = $"ADDRESS: {pointer.Item1:X}, DIFFERENCE: {pointer.Item2}";
+                listView1.Items.Add(result);
+            }
+
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -241,19 +286,25 @@ namespace Memory_Scanner__Take_3_
                 FirstScan(start, end, textBox1.Text, comboBox1.SelectedItem.ToString(), listView1, progressBar1);
 
             }
+
+            textBox1.SelectAll();
         }
 
-            private void button3_Click(object sender, EventArgs e)
+        private void button3_Click(object sender, EventArgs e)
         {
-            if (comboBox2.SelectedItem.ToString() == "Exact Value")
-            {
-                NextScan(textBox1.Text, listView1);
-            }
+            NextScan(textBox1.Text, listView1);
+
+            textBox1.SelectAll();
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            listView2.Clear();
+            DialogResult dialogResult = MessageBox.Show("DO YOU WISH TO CLEAR THE CURRENT ADDRESS LIST?", "CLEAR ADDRESS LIST", MessageBoxButtons.YesNo);
+
+            if (dialogResult == DialogResult.Yes)
+            {
+                listView2.Clear();
+            }
         }
 
         private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -271,8 +322,19 @@ namespace Memory_Scanner__Take_3_
             ListViewItem selectedItem = listView2.SelectedItems[0];
 
             string value = Microsoft.VisualBasic.Interaction.InputBox("ENTER A VALUE TO WRITE TO THE ADDRESS", "WRITE PROCESS MEMORY", "");
+        }
 
-            WriteMemory(0x349C74074, "4 byte big endian", value, null);
+        private void button5_Click(object sender, EventArgs e)
+        {
+            long start, end;
+
+            long str = Convert.ToInt64(textBox4.Text, 16);
+
+            if (long.TryParse(textBox2.Text, System.Globalization.NumberStyles.HexNumber, null, out start) &&
+                long.TryParse(textBox3.Text, System.Globalization.NumberStyles.HexNumber, null, out end))
+            {
+                PointerScan(start, end, str);
+            }
         }
     }
 }
