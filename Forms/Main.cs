@@ -16,11 +16,11 @@ using static Memory_Scanner__Take_3_.Imps;
 
 namespace Memory_Scanner__Take_3_
 {
-    public partial class Form1 : Form
+    public partial class Main : Form
     {
         public Proc mProcess = new Proc();
 
-        public Form1()
+        public Main()
         {
             InitializeComponent();
 
@@ -46,6 +46,8 @@ namespace Memory_Scanner__Take_3_
 
             label1.Enabled = true;
             label2.Enabled = true;
+
+            label7.Text = listView1.Items.Count.ToString();
 
         }
 
@@ -179,8 +181,6 @@ namespace Memory_Scanner__Take_3_
                 listView1.Items.Add(result); // CUTTING DOWN ON UI UPDATES
             }
 
-            label7.Text = listView1.Items.Count.ToString();
-
             DialogResult dialogResult = MessageBox.Show("SCAN COMPLETE.");
 
             if (dialogResult == DialogResult.OK)
@@ -234,9 +234,16 @@ namespace Memory_Scanner__Take_3_
             {
                 listView1.Items.Add(result);
             }
+
+            DialogResult dialogResult = MessageBox.Show("SCAN COMPLETE.");
+
+            if (dialogResult == DialogResult.OK)
+            {
+                progressBar1.Value = 0;
+            }
         }
 
-        public void PointerScan(long start, long end, long address)
+        public void PointerScan(long start, long end, long address, int hex)
         {
             progressBar1.Minimum = 0;
             progressBar1.Maximum = (int)(end - start + 1);
@@ -261,7 +268,7 @@ namespace Memory_Scanner__Take_3_
                 }
 
                 // IF THE DIFFERENCE IS LESS THAN OR EQUAL TO 0xFFFF (65535), CONSIDER IT A POTENTIAL POINTER
-                if (distance <= 0xFFFF)
+                if (distance <= hex)
                 {
                     pointers.Add(new Tuple<long, int>(start + (long)i, distance));
                 }
@@ -269,22 +276,52 @@ namespace Memory_Scanner__Take_3_
 
             foreach (var pointer in pointers)
             {
-                string result = $"ADDRESS: {pointer.Item1:X}, DIFFERENCE: {pointer.Item2}";
+                string result = $"ADDRESS: {pointer.Item1:X}, DIFFERENCE: {pointer.Item2:X}";
                 listView1.Items.Add(result);
             }
 
+            DialogResult dialogResult = MessageBox.Show("SCAN COMPLETE.");
+
+            if (dialogResult == DialogResult.OK)
+            {
+                progressBar1.Value = 0;
+            }
+
+        }
+
+        public long GetPointer(long pointer, int offset)
+        {
+            long value = Read4ByteBigEndian(pointer);
+
+            decimal addressToDecimal = Convert.ToDecimal(value);
+            decimal offsetToDecimal = Convert.ToDecimal(offset);
+
+            decimal decimalCalculation = addressToDecimal + offsetToDecimal;
+
+            string address = decimalCalculation.ToString("X");
+
+            long convertAddressToLong = long.Parse(address, System.Globalization.NumberStyles.HexNumber, null);
+
+            string convertAddressToString = convertAddressToLong.ToString();
+            string threeBefore = "3" + convertAddressToString;
+
+            long result = long.Parse(threeBefore);
+
+            return result;
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             long start, end;
 
-            if (long.TryParse(textBox2.Text, System.Globalization.NumberStyles.HexNumber, null, out start) &&
+            if (string.IsNullOrEmpty(textBox1.Text))
+            {
+                listView1.Clear();
+            }
+            else if (long.TryParse(textBox2.Text, System.Globalization.NumberStyles.HexNumber, null, out start) &&
                 long.TryParse(textBox3.Text, System.Globalization.NumberStyles.HexNumber, null, out end))
             {
-
                 FirstScan(start, end, textBox1.Text, comboBox1.SelectedItem.ToString(), listView1, progressBar1);
-
             }
 
             textBox1.SelectAll();
@@ -321,19 +358,37 @@ namespace Memory_Scanner__Take_3_
         {
             ListViewItem selectedItem = listView2.SelectedItems[0];
 
-            string value = Microsoft.VisualBasic.Interaction.InputBox("ENTER A VALUE TO WRITE TO THE ADDRESS", "WRITE PROCESS MEMORY", "");
+            string value = Microsoft.VisualBasic.Interaction.InputBox("ENTER A VALUE TO WRITE TO THE ADDRESS", "WRITE PROCESS MEMORY");
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            long start, end;
-
-            long str = Convert.ToInt64(textBox4.Text, 16);
+            long start, end, address;
+            int range;
 
             if (long.TryParse(textBox2.Text, System.Globalization.NumberStyles.HexNumber, null, out start) &&
-                long.TryParse(textBox3.Text, System.Globalization.NumberStyles.HexNumber, null, out end))
+                long.TryParse(textBox3.Text, System.Globalization.NumberStyles.HexNumber, null, out end) &&
+                int.TryParse(textBox5.Text, System.Globalization.NumberStyles.HexNumber, null, out range) &&
+                long.TryParse(textBox4.Text, System.Globalization.NumberStyles.HexNumber, null, out address))
             {
-                PointerScan(start, end, str);
+                PointerScan(start, end, address, range);
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            string strAddress = Microsoft.VisualBasic.Interaction.InputBox("ADD ADDRESS", "ADD AN ADDRESS MANUALLY");
+
+            if (!string.IsNullOrEmpty(strAddress))
+            {
+                long address;
+
+                if (long.TryParse(strAddress, System.Globalization.NumberStyles.HexNumber, null, out address))
+                {
+                    long value = Read4ByteBigEndian(address);
+
+                    listView2.Items.Add($"ADDRESS: {address:X}, VALUE: {value:X}");
+                }
             }
         }
     }

@@ -8,7 +8,7 @@ using static Memory_Scanner__Take_3_.Imps;
 
 namespace Memory_Scanner__Take_3_
 {
-    public partial class Form1
+    public partial class Main
     {
         /// <summary>
         /// READ A STRING VALUE FROM AN ADDRESS

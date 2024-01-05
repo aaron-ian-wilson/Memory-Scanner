@@ -8,7 +8,7 @@ using static Memory_Scanner__Take_3_.Imps;
 
 namespace Memory_Scanner__Take_3_
 {
-    public partial class Form1
+    public partial class Main
     {
         public bool WriteMemory(long code, string type, string write, System.Text.Encoding stringEncoding = null)
         {
