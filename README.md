@@ -1,4 +1,4 @@
-![CPU IMAGE, GRAPHIC, ICON](C:\Users\Aaron\Desktop\Personal Projects\Images\CPU ICON.png)
+![CPU IMAGE, GRAPHIC, ICON](Images/CPU_ICON.png)
 
 # DESCRIPTION
 
@@ -22,3 +22,5 @@ This program works by using the WinAPI (Windows API) DLL Imports. The Windows AP
 2. Name your RPCS3 exe to "rpcs3"
 
 3. Launch the program and press connect
+
+![MEMORY SCANNER PROGRAM IMAGE](Images/Memory_Scanner.png)
