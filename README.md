@@ -1,4 +1,6 @@
-![CPU IMAGE, GRAPHIC, ICON](Images/CPU_ICON.png)
+<div align="center">
+  <img src="Images/CPU ICON.png" width=300px height=300px />
+</div>
 
 # DESCRIPTION
 
@@ -23,4 +25,6 @@ This program works by using the WinAPI (Windows API) DLL Imports. The Windows AP
 
 3. Launch the program and press connect
 
-![MEMORY SCANNER PROGRAM IMAGE](Images/Memory_Scanner.png)
+<div>
+  <img src="Images/Memory scanner.PNG" />
+</div>
