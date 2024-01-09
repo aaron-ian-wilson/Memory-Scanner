@@ -76,7 +76,7 @@ namespace Memory_Scanner__Take_3_
                 {
                     Debug.WriteLine("ERROR: THE PROCESS IS NOT RESPONDING OR IS NULL");
                     return false;
-                    
+
                 }
 
                 mProcess.Handle = Imps.OpenProcess(PROCESS_VM_READ + PROCESS_VM_WRITE + PROCESS_VM_OPERATION, true, processId);
@@ -212,7 +212,7 @@ namespace Memory_Scanner__Take_3_
                     valueAtAddress = Read4ByteBigEndian(address); // THIS SHOULD CONTAIN THE CHANGED NUMBER
                 }
 
-                if (valueType == "2 Byte Big Endian")
+                if (valueType == "2 byte big endian")
                 {
                     valueAtAddress = Read2ByteBigEndian(address);
                 }
@@ -243,7 +243,7 @@ namespace Memory_Scanner__Take_3_
             }
         }
 
-        public void PointerScan(long start, long end, long address, int hex)
+        public void PointerScan(long start, long end, long address, int hex, string valueType)
         {
             progressBar1.Minimum = 0;
             progressBar1.Maximum = (int)(end - start + 1);
@@ -257,7 +257,16 @@ namespace Memory_Scanner__Take_3_
 
             for (int i = 0; i < range; i += 4)
             {
-                long valueAtAddress = Read4ByteBigEndian(start + (long)i);
+                long valueAtAddress = 0;
+
+                if (valueType.ToLower() == "4 byte big endian")
+                {
+                    valueAtAddress = Read4ByteBigEndian(start + (long)i);
+                }
+                else if (valueType.ToLower() == "2 byte big endian")
+                {
+                    valueAtAddress = Read2ByteBigEndian(start + (long)i);
+                }
 
                 int distance = (int)(valueAtAddress - address); // THE DISTANCE IN BYTES
 
@@ -267,7 +276,7 @@ namespace Memory_Scanner__Take_3_
                     distance *= -1;
                 }
 
-                // IF THE DIFFERENCE IS LESS THAN OR EQUAL TO 0xFFFF (65535), CONSIDER IT A POTENTIAL POINTER
+                // IF THE DIFFERENCE IS LESS THAN OR EQUAL TO HEX, CONSIDER IT A POTENTIAL POINTER
                 if (distance <= hex)
                 {
                     pointers.Add(new Tuple<long, int>(start + (long)i, distance));
@@ -359,6 +368,8 @@ namespace Memory_Scanner__Take_3_
             ListViewItem selectedItem = listView2.SelectedItems[0];
 
             string value = Microsoft.VisualBasic.Interaction.InputBox("ENTER A VALUE TO WRITE TO THE ADDRESS", "WRITE PROCESS MEMORY");
+
+            WriteMemory(0x342CCE60C, "byte", value);
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -371,7 +382,7 @@ namespace Memory_Scanner__Take_3_
                 int.TryParse(textBox5.Text, System.Globalization.NumberStyles.HexNumber, null, out range) &&
                 long.TryParse(textBox4.Text, System.Globalization.NumberStyles.HexNumber, null, out address))
             {
-                PointerScan(start, end, address, range);
+                PointerScan(start, end, address, range, comboBox1.SelectedItem.ToString());
             }
         }
 

@@ -26,6 +26,31 @@ namespace Memory_Scanner__Take_3_
                         Array.Reverse(memory);
                     }
                 }
+                else if (type.ToLower() == "2 byte big endian")
+                {
+                    memory = BitConverter.GetBytes(Convert.ToInt16(write));
+
+                    if (BitConverter.IsLittleEndian)
+                    {
+                        Array.Reverse(memory);
+                    }
+                }
+                else if (type.ToLower() == "string")
+                {
+                    stringEncoding = System.Text.Encoding.ASCII;
+
+                    memory = stringEncoding.GetBytes(write);
+
+                    Debug.WriteLine(memory);
+
+                    size = memory.Length;
+                }
+                else if (type.ToLower() == "byte")
+                {
+                    memory = new byte[] { Convert.ToByte(write) };
+
+                    size = memory.Length;
+                }
             }
             catch (FormatException)
             {
